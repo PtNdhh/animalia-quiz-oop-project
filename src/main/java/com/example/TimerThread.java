@@ -1,11 +1,13 @@
 package com.example;
 
 public class TimerThread extends Thread {
-    private int timeLimit; // Dalam detik
+    private int timeLeft; // Waktu dalam detik
     private boolean running = true;
+    private TimerListener listener;
 
-    public TimerThread(int timeLimit) {
-        this.timeLimit = timeLimit;
+    public TimerThread(int time, TimerListener listener) {
+        this.timeLeft = time;
+        this.listener = listener;
     }
 
     public void stopTimer() {
@@ -14,21 +16,18 @@ public class TimerThread extends Thread {
 
     @Override
     public void run() {
-        try {
-            while (running && timeLimit > 0) {
-                System.out.println("Time remaining: " + timeLimit + " seconds");
-                Thread.sleep(1000);
-                timeLimit--;
+        while (timeLeft > 0 && running) {
+            try {
+                Thread.sleep(1000); // Tunggu 1 detik
+                timeLeft--;
+                System.out.println("Time left: " + timeLeft + " seconds");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            if (timeLimit == 0) {
-                System.out.println("Time's up!");
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
-    }
 
-    public int getTimeRemaining() {
-        return timeLimit;
+        if (timeLeft == 0 && listener != null) {
+            listener.onTimeUp(); // Panggil metode dari interface
+        }
     }
 }

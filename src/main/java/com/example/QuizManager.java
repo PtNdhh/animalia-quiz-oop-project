@@ -35,5 +35,3 @@ public class QuizManager {
         return currentIndex < questions.size();
     }
 }
-
-
